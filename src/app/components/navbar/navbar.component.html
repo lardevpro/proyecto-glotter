@@ -1,0 +1,20 @@
+<nav class="navbar">
+    <div class="nav-container">
+
+        <ul class="nav-links" [class.active]="isMenuOpen">
+            <li><a [class.active]="isRouteActive('')" (click)="redirectTo('')">Inicio</a></li>
+            <li><a [class.active]="isRouteActive('courses')" (click)="redirectTo('courses')">Cursos</a></li>
+            <li><a [class.active]="isRouteActive('languages')" (click)="redirectTo('languages')">Idiomas</a></li>
+            <li><a [class.active]="isRouteActive('about')" (click)="redirectTo('about')">Nosotros</a></li>
+            <li><a [class.active]="isRouteActive('contact')" (click)="redirectTo('contact')">Contacto</a></li>
+            <li><a [class.active]="isRouteActive('login')" (click)="redirectTo('login')">Login</a></li>
+            <li><a [class.active]="isRouteActive('pronunciation')" (click)="redirectTo('pronunciation')">Coversor</a></li>
+        </ul>
+
+        <div class="menu-toggle" (click)="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+</nav>

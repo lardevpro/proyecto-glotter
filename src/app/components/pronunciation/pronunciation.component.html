@@ -1,0 +1,12 @@
+<div class="chat-container">
+    <div class="messages">
+        <!-- Mostramos el texto transcrito en tiempo real -->
+        <div class="message">{{ message }}</div>
+    </div>
+    
+    <div class="input-section">
+        <!-- Botones para iniciar y detener el reconocimiento -->
+        <button (click)="startListening()" [disabled]="recognizing">🎤 Hablar</button>
+        <button (click)="stopListening()" [disabled]="!recognizing">Detener</button>
+    </div>
+</div>
