@@ -1,31 +1,36 @@
-<div class="registro-container">
-    <h2>¡Únete a la aventura de aprender idiomas! 🌍</h2>
-    <p>Regístrate y empieza a explorar el mundo a través de nuevos idiomas. ¡El primer paso es el más emocionante!</p>
-    
-    <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-        <label for="nombreUsuario">Nombre de usuario</label>
-        <input type="text" id="nombreUsuario" formControlName="nombreUsuario" class="form-control" placeholder="Tu nombre de usuario">
-        <div *ngIf="enviado && f['nombreUsuario'].errors" class="error-message">
-          <span *ngIf="f['nombreUsuario'].errors['required']">El nombre de usuario es obligatorio.</span>
-          <span *ngIf="f['nombreUsuario'].errors['minlength']">El nombre de usuario debe tener al menos 3 caracteres.</span>
-        </div>
-    </div>
 
-    <div class="form-group">
-        <label for="email">Correo electrónico</label>
-        <input type="email" id="email" formControlName="email" class="form-control" placeholder="tuemail@ejemplo.com">
-        <div *ngIf="enviado && f['email'].errors" class="error-message">
-          <span *ngIf="f['email'].errors['required']">El correo electrónico es obligatorio.</span>
-          <span *ngIf="f['email'].errors['email']">Ingresa un correo electrónico válido.</span>
-        </div>
-    </div>
+<div class="auth-wrapper">
+  <div class="auth-container">
+    <h1>{{ isLoginMode ? '¡Bienvenido de vuelta!' : 'Únete a nuestra comunidad' }}</h1>
+    <p *ngIf="isLoginMode">
+      Inicia sesión y sigue donde lo dejaste. ¿Nuevo aquí? 
+      <a href="javascript:void(0)" (click)="toggleMode()">Crea una cuenta</a> y sé parte de algo especial.
+    </p>
+    <p *ngIf="!isLoginMode">
+      Regístrate y descubre una experiencia única. ¿Ya tienes cuenta? 
+      <a href="javascript:void(0)" (click)="toggleMode()">Inicia sesión</a>.
+    </p>
 
-    <button type="submit" class="btn btn-primary">Regístrate</button>
+    <!-- <form [formGroup]="isLoginMode ? loginForm : registerForm" (ngSubmit)="onSubmit()"> -->
+    <form [formGroup]="isLoginMode ? loginForm : registerForm">
+      <div *ngIf="!isLoginMode" class="input-group">
+        <label for="name">Nombre</label>
+        <input id="name" formControlName="name" type="text" placeholder="Tu nombre" />
+      </div>
+
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input id="email" formControlName="email" type="email" placeholder="tucorreo@ejemplo.com" />
+      </div>
+
+      <div class="input-group">
+        <label for="password">Contraseña</label>
+        <input id="password" formControlName="password" type="password" placeholder="********" />
+      </div>
+
+      <button type="submit" class="auth-button">{{ isLoginMode ? 'Iniciar Sesión' : 'Registrarse' }}</button>
     </form>
 
-    <div *ngIf="enviado && registroForm.valid" class="success-message">
-        ¡Gracias por registrarte! 🌟 Prepárate para comenzar a aprender y expandir tus horizontes.
-    </div>
-    </div>
-
+    <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+  </div>
+</div>

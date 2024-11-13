@@ -2,13 +2,13 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms'; // Importamos FormsModule para usar ngModel
 
 @Component({
-  selector: 'app-pronunciation',
+  selector: 'app-chat',
   standalone: true,
   imports: [FormsModule], // Asegúrate de agregar FormsModule para usar ngModel
-  templateUrl: './pronunciation.component.html',
-  styleUrls: ['./pronunciation.component.css'],
+  templateUrl: './chat.component.html',
+  styleUrls: ['./chat.component.scss'],
 })
-export class PronunciationComponent {
+export class ChatComponent {
   message: string = ''; // Mensaje actual de la transcripción
   recognizing: boolean = false; // Estado de la transcripción de voz
   recognition: any; // Instancia de SpeechRecognition
