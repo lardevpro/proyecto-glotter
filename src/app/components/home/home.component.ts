@@ -7,6 +7,7 @@ import { StatisticsComponent } from './components/statistics/statistics.componen
 import { TestimonialsComponent } from './components/testimonials/testimonials.component';
 import { MethodologyComponent } from './components/methodology/methodology.component';
 import { FadeInDirective } from '../../directives/fade-in.directive';
+import { LoginComponent } from "../login/login.component";
 
 @Component({
   selector: 'app-home',
@@ -20,7 +21,8 @@ import { FadeInDirective } from '../../directives/fade-in.directive';
     TestimonialsComponent,
     MethodologyComponent,
     FadeInDirective,
-  ],
+    LoginComponent
+],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })

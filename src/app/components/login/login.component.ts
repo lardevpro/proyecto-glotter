@@ -1,61 +1,80 @@
-// login.component.ts
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-//import { AuthService } from '../service/login.service'; // Asegúrate de crear el servicio auth si aún no lo tienes
+import { CommonModule } from '@angular/common';
+import { AuthService } from './service/auth.service';
+
 
 @Component({
   selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
   loginForm: FormGroup;
   registerForm: FormGroup;
-  isLoginMode: boolean = true;
   errorMessage: string = '';
+  isLoginMode = true;
+  toggleMode: boolean = false;
 
-  // constructor(private fb: FormBuilder, private authService: AuthService)
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private loginService: AuthService,
+    private registerService: AuthService
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
 
     this.registerForm = this.fb.group({
-      name: ['', Validators.required],
+      name: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      date_registered: [new Date().toISOString()]
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
-  toggleMode() {
-    this.isLoginMode = !this.isLoginMode;
+  onSubmit() {
     this.errorMessage = '';
+    if (this.isLoginMode) {
+      this.login();
+    } else {
+      this.register();
+    }
   }
 
-  // onSubmit() {
-  //   if (this.isLoginMode) {
-  //     this.authService.login(this.loginForm.value).subscribe({
-  //       next: response => {
-  //         console.log('Inicio de sesión exitoso', response);
-  //       },
-  //       error: error => {
-  //         this.errorMessage = 'Error al iniciar sesión. Verifica tus credenciales.';
-  //       }
-  //     });
-  //   } else {
-  //     this.authService.register(this.registerForm.value).subscribe({
-  //       next: response => {
-  //         console.log('Registro exitoso', response);
-  //       },
-  //       error: error => {
-  //         this.errorMessage = 'Error al registrarse. Inténtalo nuevamente.';
-  //       }
-  //     });
-  //   }
-  // }
+  private login() {
+    if (this.loginForm.invalid) {
+      this.errorMessage = 'Por favor completa todos los campos correctamente.';
+      return;
+    }
+    this.loginService.login(this.loginForm.value).subscribe({
+      next: response => {
+        console.log('Inicio de sesión exitoso', response);
+      },
+      error: () => {
+        this.errorMessage = 'Error al iniciar sesión. Verifica tus credenciales.';
+      }
+    });
+  }
+
+  private register() {
+    if (this.registerForm.invalid) {
+      this.errorMessage = 'Por favor completa todos los campos correctamente.';
+      return;
+    }
+    this.registerService.register(this.registerForm.value).subscribe({
+      next: response => {
+        console.log('Registro exitoso', response);
+      },
+      error: () => {
+        this.errorMessage = 'Error al registrarse. Inténtalo nuevamente.';
+      }
+    });
+  }
+
+  toggleModeHandler() {
+    this.isLoginMode = !this.isLoginMode;
+  }
 }

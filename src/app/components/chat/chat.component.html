@@ -1,12 +1,17 @@
 <div class="chat-container">
-    <div class="messages">
-        <!-- Mostramos el texto transcrito en tiempo real -->
-        <div class="message">{{ message }}</div>
+    <div class="chat-box">
+      <div *ngFor="let message of messages" [ngClass]="{'system-message': message.isSystem, 'user-message': !message.isSystem}">
+        <span>{{ message.text }}</span>
+      </div>
     </div>
-    
-    <div class="input-section">
-        <!-- Botones para iniciar y detener el reconocimiento -->
-        <button (click)="startListening()" [disabled]="recognizing">🎤 Hablar</button>
-        <button (click)="stopListening()" [disabled]="!recognizing">Detener</button>
+  
+    <div class="input-area">
+      <textarea [(ngModel)]="userInput" placeholder="Escribe tu mensaje..." rows="3"></textarea>
+      
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" (click)="startSpeechRecognition()">🎤 Hablar</button>
+        <button mat-raised-button color="accent" (click)="speakText(systemMessage)">🔊 Escuchar instrucciones</button>
+      </div>
     </div>
-</div>
+  </div>
+  

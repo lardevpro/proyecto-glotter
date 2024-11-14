@@ -1,59 +1,92 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms'; // Importamos FormsModule para usar ngModel
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [FormsModule], // Asegúrate de agregar FormsModule para usar ngModel
+  imports: [CommonModule, FormsModule],
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.scss'],
+  styleUrls: ['./chat.component.scss']
 })
 export class ChatComponent {
-  message: string = ''; // Mensaje actual de la transcripción
-  recognizing: boolean = false; // Estado de la transcripción de voz
-  recognition: any; // Instancia de SpeechRecognition
+  messages: Array<{ text: string, isSystem: boolean }> = [];
+  userInput: string = '';
+  systemMessage: string = '¡Hola! ¿En qué puedo ayudarte hoy?';
+  isListening: boolean = false; // Control para verificar si está escuchando
 
   constructor() {
-    // Verificamos si el navegador soporta la API de Web Speech
-    if ('webkitSpeechRecognition' in window) {
-      this.recognition = new (window as any).webkitSpeechRecognition();
-      this.recognition.continuous = true;  // Continuar escuchando
-      this.recognition.interimResults = true;  // Mostrar resultados intermedios mientras escucha
-
-      // Iniciar la transcripción
-      this.recognition.onstart = () => {
-        this.recognizing = true;
-      };
-
-      // Detener la transcripción
-      this.recognition.onend = () => {
-        this.recognizing = false;
-      };
-
-      // Obtener los resultados de la transcripción
-      this.recognition.onresult = (event: any) => {
-        let transcript = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          transcript += event.results[i][0].transcript; // Texto transcrito
-        }
-        this.message = transcript; // Actualiza el mensaje con el texto
-      };
-    } else {
-      alert('Tu navegador no soporta la API de reconocimiento de voz.');
-    }
+    this.addSystemMessage(this.systemMessage);
   }
 
-  // Comienza el reconocimiento de voz
-  startListening() {
-    if (!this.recognizing) {
-      this.recognition.start();
-    }
+  // Añadir un mensaje del sistema
+  addSystemMessage(text: string) {
+    this.messages.push({ text, isSystem: true });
   }
 
-  // Detener el reconocimiento de voz
-  stopListening() {
-    if (this.recognizing) {
-      this.recognition.stop();
+  // Añadir un mensaje del usuario
+  addUserMessage(text: string) {
+    this.messages.push({ text, isSystem: false });
+  }
+
+  // Iniciar el reconocimiento de voz
+  startSpeechRecognition() {
+    // Verificar si el navegador es compatible
+    const recognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!recognition) {
+      this.addSystemMessage('Lo siento, tu navegador no soporta el reconocimiento de voz.');
+      return;
     }
+
+    // Si ya está escuchando, no hacer nada
+    if (this.isListening) {
+      return;
+    }
+
+    this.isListening = true; // Indicamos que está escuchando
+
+    // Instanciar el objeto de reconocimiento de voz
+    const recognitionInstance = new recognition();
+    recognitionInstance.lang = 'es-ES';  // Establecer el idioma a español
+    recognitionInstance.continuous = false; // No continuará escuchando automáticamente, lo hace después de una frase
+    recognitionInstance.interimResults = false; // No mostrar resultados intermedios
+
+    // Evento cuando el reconocimiento empieza
+    recognitionInstance.onstart = () => {
+      this.addSystemMessage('Escuchando...');
+    };
+
+    // Evento cuando se recibe el resultado de la transcripción
+    recognitionInstance.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      this.userInput = transcript;
+      this.addUserMessage(transcript);
+      this.speakText(`He recibido tu mensaje: ${transcript}`);
+      recognitionInstance.stop();  // Detener el reconocimiento al recibir el resultado
+      this.isListening = false;    // Resetear el estado de "escuchando"
+    };
+
+    // Evento de error durante el reconocimiento
+    recognitionInstance.onerror = (event: any) => {
+      this.addSystemMessage('Ocurrió un error al intentar escucharte, por favor intenta de nuevo.');
+      recognitionInstance.stop();
+      this.isListening = false;
+    };
+
+    // Evento cuando el reconocimiento termina
+    recognitionInstance.onend = () => {
+      this.addSystemMessage('Deja de hablar para finalizar.');
+      this.isListening = false; // Resetear el estado de "escuchando"
+    };
+
+    // Iniciar el reconocimiento de voz
+    recognitionInstance.start();
+  }
+
+  // Función para que el sistema lea en voz alta el texto
+  speakText(text: string) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'es-ES';  // Establecer el idioma a español
+    window.speechSynthesis.speak(utterance);
   }
 }
