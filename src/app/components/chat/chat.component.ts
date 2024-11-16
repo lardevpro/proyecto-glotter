@@ -61,7 +61,7 @@ export class ChatComponent {
       const transcript = event.results[0][0].transcript;
       this.userInput = transcript;
       this.addUserMessage(transcript);
-      this.speakText(`He recibido tu mensaje: ${transcript}`);
+      this.speakText(` ${transcript}`);
       recognitionInstance.stop();  // Detener el reconocimiento al recibir el resultado
       this.isListening = false;    // Resetear el estado de "escuchando"
     };
